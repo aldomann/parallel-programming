@@ -168,12 +168,10 @@ void randomizeBodies(real4* pos,
       normalize(axis);
     }
     real vv[3] = {(real)pos[i].x, (real)pos[i].y, (real)pos[i].z};
-    real vv0[3];
-
-    cross(vv0, vv, axis);
-    vel[i].x = vv0[0] * vscale;
-    vel[i].y = vv0[1] * vscale;
-    vel[i].z = vv0[2] * vscale;
+    cross(vv, vv, axis);
+    vel[i].x = vv[0] * vscale;
+    vel[i].y = vv[1] * vscale;
+    vel[i].z = vv[2] * vscale;
 
     i++;
   }
@@ -221,7 +219,7 @@ int main(int argc, char** argv)
     pin = t;
   }
 
-  real3 p_av= average( pin, n);
+  real3 p_av= average( pout, n);
   printf("Average position: (%f,%f,%f)\n", p_av.x, p_av.y, p_av.z);
 
   free(pin);  free(pout);  free(v);  free(f);
