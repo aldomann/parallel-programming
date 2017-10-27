@@ -51,7 +51,7 @@ rm perf-out.txt
 ## R script
 
 
-```{r}
+```{r include=FALSE}
 source("diff-plots.R")
 ```
 
@@ -60,8 +60,9 @@ data1 <- read_results("perf-base1.csv", "base1")
 data2 <- read_results("perf-base2.csv", "base2")
 data3 <- read_results("perf-base3.csv", "base3")
 data4 <- read_results("perf-base4.csv", "base4")
+data.exp <- read_results("perf-exp.csv", "exp")
 
-new.data <- rbind(data1, data2, data3, data4)
+new.data <- rbind(data1, data.exp)
 ```
 ```{r}
 get_perf_plots(new.data)
