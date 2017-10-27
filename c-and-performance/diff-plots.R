@@ -35,16 +35,18 @@ read_results <- function(file, type) {
 
 # Read data and create plots -------------------------------
 
-data1 <- read_results("c-and-performance/perf-base1.csv", "base1")
-data2 <- read_results("c-and-performance/perf-base2.csv", "base2")
-data3 <- read_results("c-and-performance/perf-base3.csv", "base3")
+# data1 <- read_results("c-and-performance/perf-base1.csv", "base1")
+# data2 <- read_results("c-and-performance/perf-base2.csv", "base2")
+# data3 <- read_results("c-and-performance/perf-base3.csv", "base3")
+#
+# new.data <- rbind(data1, data2, data3)
 
-new.data <- rbind(data1, data2, data3)
-
-ggplot(new.data, aes(x = reorder(f2si2(size), size), y = opps, fill = type))+
-	geom_bar(stat = "identity", position = "dodge") +
-	geom_text(aes(y = opps * 1.01, label = round(opps)),
-						vjust = -0.1, position=position_dodge(width=0.9)) +
-	labs(title = "Performance results",
-			 x = "Size of the problem",
-			 y = "Performance (Mega SAXPYs/second)")
+get_perf_plots <- function(df) {
+	ggplot(df, aes(x = reorder(f2si2(size), size), y = opps, fill = type))+
+		geom_bar(stat = "identity", position = "dodge") +
+		geom_text(aes(y = opps * 1.01, label = round(opps)),
+							vjust = -0.1, position=position_dodge(width=0.9)) +
+		labs(title = "Performance results",
+				 x = "Size of the problem",
+				 y = "Performance (Mega SAXPYs/second)")
+}
