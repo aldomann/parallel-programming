@@ -1,24 +1,15 @@
 #!/bin/bash
-NX=$1
-NY=$2
-NZ=$3
-executable=$4
-perfoutfile=$5
+NX=$1; NY=$2; NZ=$3; executable=$4; perfoutfile=$5
 
 if [ ! -f $perfoutfile ]; then
 	touch $perfoutfile
 	echo "iter,nx,ny,nz,cycl,inst,time" >> $perfoutfile
 fi
 
-echo -n $(perf stat -o perf-out.txt -e cycles,instructions ./$executable $NX $NY $NZ | cut -d ' ' -f8) >> $perfoutfile
-echo -n "," >> $perfoutfile
-echo -n $(grep "stats" perf-out.txt | awk '{print substr($0,32) }' | grep -o -E '[0-9]+'| sed ':a;N;$!ba;s/\n/,/g') >> $perfoutfile
-echo -n "," >> $perfoutfile
-echo -n $(grep "cycles" perf-out.txt | awk '{print substr($1,0,19) }' | sed 's/\.//g') >> $perfoutfile
-echo -n "," >> $perfoutfile
-echo -n $(grep "instructions" perf-out.txt | awk '{print substr($1,0,19) }' | sed 's/\.//g') >> $perfoutfile
-echo -n "," >> $perfoutfile
-echo -n $(grep "time elapsed" perf-out.txt | awk '{print substr($1,0,19) }' | sed 's/,/\./g') >> $perfoutfile
-echo >> $perfoutfile
+perf stat -o perf-out.txt -e cycles,instructions ./$executable $NX $NY $NZ | awk '{ print $8 }' ORS="," >> $perfoutfile
+awk '/stats/ { printf ("%d,%d,%d,", $6, $7, $8) }' perf-out.txt >> $perfoutfile
+awk '/cycles/ { gsub(/\./,"",$1); print $1 }' ORS="," perf-out.txt >> $perfoutfile
+awk '/instructions/ { gsub(/\./,"",$1); print $1 }' ORS="," perf-out.txt >> $perfoutfile
+awk '/elapsed/ { gsub(/,/,".",$1);print $1 }' perf-out.txt >> $perfoutfile
 
 rm perf-out.txt
