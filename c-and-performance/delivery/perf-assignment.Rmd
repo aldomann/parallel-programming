@@ -4,18 +4,22 @@ subtitle: "C Programming and Performance Delivery"
 author: "Alfredo Hernández & Alejandro Jiménez"
 date: "27 October 2017"
 output:
-  html_notebook:
-    highlight: pygments
-    theme: cosmo
+  pdf_document:
     toc: yes
   html_document:
     df_print: paged
     toc: yes
-  pdf_document:
-    fig_height: 3.5
-    fig_width: 6
+  html_notebook:
+    highlight: pygments
+    theme: cosmo
     toc: yes
 ---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(fig.width = 7, fig.height = 4, fig.align = "center", out.width = '80%', tidy.opts=list(width.cutoff=30))
+```
+
+
 # Goals
 - Understand the algorithm and its computational model (complexity, problem size).
 - Performance engineer the code: optimize the serial execution and understand where is the performance bottleneck.
@@ -31,9 +35,7 @@ output:
 6. Improve the program implementation of the serial code in order to take advantage of the SIMD or vector instructions available in the processor. Ask the teacher if you need help. 
 7. Find out the performance bottleneck of the program (using `perf` ). Ask the teacher if you need help.
 
-# Report
-
-## Intro
+# Introduction
 
 When executing this kind of simulations, the first thing to do is to define the problem *size*. The problem *size* is about the dimensionality of the simulation we are carrying on. In this case - a diffusion problem - the dimensionality has to do with the _size_ of the cube where the simulation is running on. In this program the cube is expressed as a 3-dimensional matrix. Since one of the objectives is to measure the performance of the code, we can carry the program over different problem _sizes_. 
 
@@ -73,7 +75,9 @@ if [ ! -f $perfoutfile ]; then
 	echo "iter,init,acc,nx,ny,nz,cycl,inst,time,br,brmiss" > $perfoutfile
 fi
 
-perf stat -o $outfile -e cycles,instructions,branches,branch-miss ./$executable $NX $NY $NZ | awk '/Running/ { print $8; print $10} /Accuracy/ { printf("%e,", $3) }' ORS="," >> $perfoutfile
+perf stat -o $outfile -e cycles,instructions,branches,branch-miss ./$executable \ 
+$NX $NY $NZ | awk '/Running/ { print $8; print $10} /Accuracy/ { printf("%e,", $3) }' \
+ORS="," >> $perfoutfile
 awk '/stats/ { printf ("%d,%d,%d,", $6, $7, $8) }' $outfile >> $perfoutfile
 awk '/cycles/ { gsub(/\,/,""); print $1 }' ORS="," $outfile >> $perfoutfile
 awk '/instructions/ { gsub(/\,/,""); print $1 }' ORS="," $outfile >> $perfoutfile
@@ -111,6 +115,8 @@ df.flags <- rbind(df.no, df.o2, df.o3)
 df.opts <- rbind(df.bs, df.nt, df.nt.gl)
 ```
 
+# Performance tests and optimisation process
+
 ## Defining performance
 
 Now that we have clean data, we start the analysis of the results. Using `R` scripts, we adequately merge results from different versions of the code over different problem *sizes*.
@@ -137,6 +143,17 @@ read_results <- function(file, typ) {
 }
 ```
 
+## Influence of the variable type
+
+In all this process, it is wise to keep in mind that making changes in a code can lead to unexpected results, and this can compromise the functionality of our code. What does functionality mean? The functionality is not altered if the code does exactly what it used to in the exact same way. For instance, if we change all `double` variables with `float` variables, we could spare some memory space and improve the performance, but we would lose some decimals in our variables, this leads to a loss in **accuracy**. Actually, since all decimal variables present in the code are declared as `float`, we have made the opposite change and studied its consequences:
+
+```{r}
+get_acc_plots(df.acc)
+get_perf_plots(df.acc, "(comparing var type)")
+```
+
+Taking a look at the results we can notice how the performance of the program has been deteriorated a bit, but the accuracy has been greatly improved. Thus, we chose to use `double` variables and accept this small trade-off as we will be optimising the code anyway.
+
 ## Concerning time
 
 A crucial point considering the measurement of performance is that we are always using **time**. Not as easy as it may seem, the *time* we measure is a concept to be well defined. The matter about time is that we have the time needed to initialize the program in one hand, and the total time of execution in the other. In order to take a decision we first take a look at the dependence of both *times* on the *size* of the problem. Note that the scale is logarithmic.
@@ -157,31 +174,20 @@ get_perf_plots(df.flags, "(comparing compiler flags)")
 
 Then we can decide which compiler flag is the best option for us. Is not an easy choice, for we can notice that for some problem *sizes* the highest performance is obtained using `O3`; but for the bigger problem *sizes*, the best performance is obtained using `O2`. We don't know enough about `gcc` to be sure this is just an statistical outlier or a real pattern. Taking into account the scalability of the problem and prioritising the measures of the bigger *sizes*, we have decided to use the compiler flag `O3` henceforth regardless.
 
-## Optimising the code
+## Classical optimisations
 
 At this moment we should be able to measure the performance of our code in a pretty reliable way. Is at this point where we find useful and interesting to optimise some parts of our code, for we can now measure precisely its effects.
 
 For this purpose, we prepared different versions of the original code:
 
 - **Original version**: self-explanatory.
-- **No-time version**: eExploring the original code, we noticed that a variable called `time` was declared and set to 0, then this variable was used in many functions and computations. Most of this computations were expendable knowing that the variable *time* was always zero. Removing this computation and setting its results as constants without computation simplified the code and optimized its performance without modifying the results.
+- **No-time version**: exploring the original code, we noticed that a variable called `time` was declared and set to 0, then this variable was used in many functions and computations. Most of this computations were expendable knowing that the variable *time* was always zero. Removing this computation and setting its results as constants without computation simplified the code and optimized its performance without modifying the results.
 - **Good-loop version**: one easy way to trick the performance of a code is to permutate the index of multiple loops. We have played with many different combinations of loops and found the fastest one ($z$ nested inside $x$, all nested inside $y$), which is the one used in this version.
 - **Good-loop + no-time version**: this version involve both changes applied in the previous versions.
 
 ```{r}
 get_perf_plots(df.opts, "(comparing optimisations)")
 ```
-
-## Influence of the variable type
-
-In all this process, it is wise to keep in mind that making changes in a code can lead to unexpected results, and this can compromise the functionality of our code. What does functionality mean? The functionality is not altered if the code does exactly what it used to in the exact same way. For instance, if we change all `double` variables with `float` variables, we could spare some memory space and improve the performance, but we would lose some decimals in our variables, this leads to a loss in **accuracy**. Actually, since all decimal variables present in the code are declared as `float`, we have made the opposite change and studied its consequences:
-
-```{r}
-get_acc_plots(df.acc)
-get_perf_plots(df.acc, "(comparing var type)")
-```
-
-Taking a look at the results we can notice how the performance of the program has been deteriorated, but the accuracy has been greatly improved. Thus, we chose to use `double` variables and accept this trade-off. 
 
 # Conclusions
 

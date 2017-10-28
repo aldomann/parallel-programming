@@ -31,7 +31,7 @@ mylog_trans <- function(base=exp(1), from=0)
 						domain = c(base^from, Inf))
 }
 
-# Read results
+# Read and clean results
 read_results <- function(file, typ) {
 	data <- read_csv(file)
 	data <- data %>%
