@@ -4,7 +4,7 @@
 #include <time.h>
 
 #ifndef REAL
-#define REAL float
+#define REAL double
 #endif
 
 #ifndef M_PI
@@ -17,14 +17,14 @@
 void diffusion (REAL * F1, REAL * F2,
                 int nx, int ny, int nz,
                 REAL ce, REAL cw, REAL cn, REAL cs, REAL ct,
-                REAL cb, REAL cc, int time)
+                REAL cb, REAL cc, int count)
 {
   int t, x, y, z;
-  for (t = 0; t < time; ++t)
+  for (t = 0; t < count; ++t)
   {
-    for (z=0; z < nz; z++)
-      for (y = 0; y < ny; y++)
-        for (x = 0; x < nx; x++)
+    for (y = 0; y < ny; y++)
+      for (x = 0; x < nx; x++)
+        for (z=0; z < nz; z++)
         {
           int west, east, north, south, top, down;
           if (x == 0)    west = x;  else west = x - 1;
@@ -46,24 +46,20 @@ void diffusion (REAL * F1, REAL * F2,
 void init (REAL *F1, const int nx, const int ny, const int nz,
            const REAL kx, const REAL ky, const REAL kz,
            const REAL dx, const REAL dy, const REAL dz,
-           const REAL kappa, const REAL time)
+           const REAL kappa)
 {
-  REAL ax, ay, az;
   int jz, jy, jx;
-  ax = exp(-kappa*time*(kx*kx));
-  ay = exp(-kappa*time*(ky*ky));
-  az = exp(-kappa*time*(kz*kz));
-  for (jz = 0; jz < nz; jz++)
-    for (jy = 0; jy < ny; jy++)
-      for (jx = 0; jx < nx; jx++)
+  for (jy = 0; jy < ny; jy++)
+    for (jx = 0; jx < nx; jx++)
+      for (jz = 0; jz < nz; jz++)
       {
         REAL x = dx*((REAL)(jx + 0.5));
         REAL y = dy*((REAL)(jy + 0.5));
         REAL z = dz*((REAL)(jz + 0.5));
         REAL f0 = (REAL)0.125
-          *(1.0 - ax*cos(kx*x))
-          *(1.0 - ay*cos(ky*y))
-          *(1.0 - az*cos(kz*z));
+          *(1.0 - cos(kx*x))
+          *(1.0 - cos(ky*y))
+          *(1.0 - cos(kz*z));
         F1(jx,jy,jz) = f0;
       }
 }
@@ -72,9 +68,9 @@ REAL sum_values (REAL *F1, const int nx, const int ny, const int nz)
 {
   REAL sum=0.0;
   int jz, jy, jx;
-  for (jz = 0; jz < nz; jz++)
-    for (jy = 0; jy < ny; jy++)
-      for (jx = 0; jx < nx; jx++)
+  for (jy = 0; jy < ny; jy++)
+    for (jx = 0; jx < nx; jx++)
+      for (jz = 0; jz < nz; jz++)
         sum += F1(jx,jy,jz);
   return sum;
 }
@@ -98,7 +94,6 @@ int main(int argc, char *argv[])
 
   REAL *f_final = NULL;
 
-  REAL  time  = 0.0;
   int   count = 0;
 
   REAL l, dx, dy, dz, kx, ky, kz, kappa, dt;
@@ -113,9 +108,8 @@ int main(int argc, char *argv[])
   f_final = (count % 2)? f2 : f1;
 
   clock_t begin = clock();
-  init(f1, NX, NY, NZ, kx, ky, kz, dx, dy, dz, kappa, time);
+  init(f1, NX, NY, NZ, kx, ky, kz, dx, dy, dz, kappa);
   clock_t end = clock();
-
   double init_time = (double)(end - begin) / CLOCKS_PER_SEC;
 
   REAL err = sum_values(f1, NX, NY, NZ);
@@ -131,7 +125,7 @@ int main(int argc, char *argv[])
   diffusion(f1, f2, NX, NY, NZ, ce, cw, cn, cs, ct, cb, cc, count);
 
   err = err - sum_values(f_final, NX, NY, NZ);
-  fprintf(stderr, "Accuracy     : %E\n", err);
+  printf("Accuracy     : %E\n", err);
 
   free(f1); free(f2);
   return 0;

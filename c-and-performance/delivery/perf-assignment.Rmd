@@ -31,86 +31,105 @@ subtitle: C Programming and Performance Delivery
 
 # Report
 
+## Intro
+
 When executing this kind of simulations, the first thing to do is to define the problem *size*. The problem _size_ is about the dimensionality of the simulation we are carrying on. In this case - a diffusion problem - the dimensionality has to do with the _size_ of the cube where the simulation is running on. In this program the cube is expressed as 3 dimensions matrix. Since one of the objectives is to measure the performance of the code, we can carry the program over different problem _sizes_. 
 
 Another point worth considering is the comparison between the performance of different compilation flags. For this purpose, we have considered two different compilation flags: `O2` and `O3`. Another popular possibility was the flag `Ofast`, but we discarded because it is not so different from `O3` and it presents more incompatibilities.
 
-The code excerpt down here compiles the different versions of our code over different problem *sizes* and it exports their performance using `perfstat`.
+One decision that we have also to make is about the compiler that we are going to use. They are many compilers to consider and with its own advantages, but we limited our scope to the more popular ones. Bibliographical research has lead us to decide on `gcc` over the rest of them. Even though the differences measured in performance were small and with heterogeneus results, the final decision has been made on `gcc`.
 
-### From `.C` to `perfstat`
+## From `.c` to `.csv`
+The two bash scripts down below compile different versions of our code over different problem *sizes* and it exports their performance using `perf stat`. This lets us output raw data with the performance and timing of the execution of the code into a beautifully simple `.csv` file.
+
 ```{bash eval=FALSE}
 #!/bin/bash
-chmod +x do-perf-server.sh
+perfbin=do-perf.sh
 
-executable=run-base
-perfoutfile=perf-base.csv
+chmod +x $perfbin
 
-if [ -f $perfoutfile ]; then
-	rm $perfoutfile
+source=$1; executable=run; perfoutfile=$2
+
+if [ -f ${perfoutfile}-base.csv ]; then
+	rm ${perfoutfile}-base.csv
 	echo "Removed previous results."
 fi
 
-for (( i = 25; i <= 150; i +=25 )); do
-	gcc -lm diff-base.c -o $executable
-	bash do-perf-server.sh $i $i $i $executable $perfoutfile
-done
-
-for (( i = 25; i <= 150; i +=25 )); do
-	gcc -O2 -lm diff-base.c -o $executable
-	bash do-perf-server.sh $i $i $i $executable $perfoutfile
-done
-
-for (( i = 25; i <= 150; i +=25 )); do
-	gcc -O3 -lm diff-base.c -o $executable
-	bash do-perf-server.sh $i $i $i $executable $perfoutfile
+for (( i = 25; i <= 125; i +=25 )); do
+	gcc -lm ${source}.c -o $executable
+	bash $perfbin $i $i $i $executable ${perfoutfile}-base.csv
 done
 ```
 
-Once we have the raw data about the performance and timing of the execution of the code, we manage to wrap it all into a beautifully simple `csv` file; which is done in this script down here:
-
-### From  `perfstat` to `.csv`
 ```{bash eval=FALSE}
 #!/bin/bash
 NX=$1; NY=$2; NZ=$3; executable=$4; perfoutfile=$5
+outfile=out.txt
 
 if [ ! -f $perfoutfile ]; then
-	touch $perfoutfile
-	echo "iter,nx,ny,nz,cycl,inst,time" >> $perfoutfile
+	echo "iter,init,acc,nx,ny,nz,cycl,inst,time,br,brmiss" > $perfoutfile
 fi
 
-perf stat -o perf-out.txt -e cycles,instructions ./$executable $NX $NY $NZ | awk '{ print $8 }' ORS="," >> $perfoutfile
-awk '/stats/ { printf ("%d,%d,%d,", $6, $7, $8) }' perf-out.txt >> $perfoutfile
-awk '/cycles/ { gsub(/\./,"",$1); print $1 }' ORS="," perf-out.txt >> $perfoutfile
-awk '/instructions/ { gsub(/\./,"",$1); print $1 }' ORS="," perf-out.txt >> $perfoutfile
-awk '/elapsed/ { gsub(/,/,".",$1);print $1 }' perf-out.txt >> $perfoutfile
+perf stat -o $outfile -e cycles,instructions,branches,branch-miss ./$executable $NX $NY $NZ | awk '/Running/ { print $8; print $10} /Accuracy/ { printf("%e,", $3) }' ORS="," >> $perfoutfile
+awk '/stats/ { printf ("%d,%d,%d,", $6, $7, $8) }' $outfile >> $perfoutfile
+awk '/cycles/ { gsub(/\,/,""); print $1 }' ORS="," $outfile >> $perfoutfile
+awk '/instructions/ { gsub(/\,/,""); print $1 }' ORS="," $outfile >> $perfoutfile
+awk '/elapsed/ { print $1 }' ORS="," $outfile >> $perfoutfile
+awk '/branches/ { gsub(/\,/,""); print $1 }' ORS="," $outfile >> $perfoutfile
+awk '/branch-miss/ { gsub(/\,/,""); print $1 }' $outfile >> $perfoutfile
 
-rm perf-out.txt
+rm $outfile
+```
+
+## Cleaning variables with R
+
+Using R we can easily do calculations with the `perf stat` (in `.csv` files) results:
+
+```{r include=FALSE}
+source("diff-plots.R")
+```
+
+```{r message=FALSE}
+# Accuracy + init
+df.float <- read_results("perfstats-base-float.csv", "float")
+df.double <- read_results("perfstats-base-double.csv", "double")
+# Flags
+df.no <- read_results("perfstats-flags-no.csv", "base")
+df.o2 <- read_results("perfstats-flags-o2.csv", "-O2")
+df.o3 <- read_results("perfstats-flags-o3.csv", "-O3")
+# Optimisations
+df.bs <- read_results("perfstats-opts-base.csv", "base")
+df.nt <- read_results("perfstats-opts-notime.csv", "no time")
+df.nt.gl <- read_results("perfstats-opts-notime-goodloop.csv", "no time + good loop")
+
+# Rbinds
+df.acc <- rbind(df.float, df.double)
+df.flags <- rbind(df.no, df.o2, df.o3)
+df.opts <- rbind(df.bs, df.nt, df.nt.gl)
 ```
 
 ## Defining performance
 
 Now that we have clean data, we start the analysis of the results. Using `R` scripts, we merge all the results from different versions of the code, using different compiler flags over different problem *sizes*.
 
-```{r include=FALSE}
-source("diff-plots.R")
-```
-
 One interesting point about the data analysis of the performance results is the different definitions we can consider about the concept of **performance**. A classical and straight-forward way to define performance is *time*. The *time* needed to execute the program is the fastest and easy-to-understand magnitude to measure the efficiency of a code; assuming a program does everything we want it to do, the fastest the better. However reasonable this may sound, it does not lack of some flaws and is easy to trick it into apparent high performance. In fact, there is no perfect way to measure the performance. Taking all of that into consideration, a safe way to measure and compare the performance is using a variable known **operations** per second, which is derived from other standard measure of performance:
 
 $$\frac{Operations}{Second} = \frac{Operations}{Instruction} \frac{Instructions}{Clock Cycles} \frac{Clock Cycles}{Second}$$
 
-The most controversial thing about the definition of *Operations* is that it lacks of a formal definition. In our case, we have considered that the number of operations escalates with the number of loops of the code. Taking a look into the code, one can notice three triple loops on $nx$, $ny$ and $nz$ and one quadruple loop on $nx$, $ny$, $nz$ and $iter$. Thus, we define the number of operations as $operations = n_xn_yn_z(3 + iter)$
+The most controversial thing about the definition of *Operations* is that it lacks of a formal definition. In our case, we have considered that the number of operations escalates with the number of loops of the code. Taking a look into the code, one can notice three triple loops on $nx$, $ny$ and $nz$ and one quadruple loop on $nx$, $ny$, $nz$ and $iter$. Thus, we define the number of operations as $operations = n_x \times n_y \times n_z \times (3 + iter)$.
 
 ```{r eval=FALSE}
-read_results <- function(file, type) {
+read_results <- function(file, typ) {
 	data <- read_csv(file)
 	data <- data %>%
+		mutate(type = typ) %>%
+		mutate(brpmiss = brmiss/br) %>%
 		mutate(op = nx * ny * nz * (3 + iter)) %>%
 		mutate(size = nx * ny * nz) %>%
 		mutate(ipc = inst/cycl) %>%
 		mutate(clck = cycl/time/10^9) %>%
 		mutate(opps = op/time/10^6) %>%
-		mutate(type = type)
+		mutate(acc = abs(acc))
 	return(data.frame(data))
 }
 ```
@@ -119,19 +138,21 @@ read_results <- function(file, type) {
 
 A crucial point considering the measurement of performance is that we are always using **time**. Not as easy as it may seem, the *time* we measure is a concept to be well defined. The matter about time is that we have the time needed to initialize the program in one hand, and the total time of execution in the other. In order to take a decision we first take a look at the dependence of both *times* on the *size* of the problem. Note that the scale is logarithmic.
 
-> Pretty figures comparint *init* time and total time.
+```{r}
+get_time_plots(df.double)
+```
 
 Here we can notice how irrelevant the *init* time becomes when we make the problem big enough, and since we prioritize the measures taken from the biggest problems, we shall use the *total time* hereafter.
-
 
 ## Choosing compiler flag
 
 Now that we know how we will measure the performance and we understand how the time is measured, we just need to decide which compiler flag is more suitable for our purpose. Now we execute the initial version of the code using different compilers flags.
 
-> 'Pretty figures comparing compilers flags'
+```{r}
+get_perf_plots(df.flags, "(comparing compiler flags)")
+```
 
 Then we can decide which compiler flag is the best option for us. Is not an easy choice, for we can notice that for some problem *sizes* the highest performance is obtained using `O2`; but for the highest problem *size*, the greatest performance is obtained using `O3`. Taking into account the scalability of the problem and prioritizing the measures of the greatest *sizes*, we have decided to use the compiler flag `O3` henceforth.
-
 
 ## Optimizing the code
 
@@ -139,48 +160,30 @@ At this moment we should be able to measure the performance of our code in a rel
 
 For this purpose, we prepared different versions of the original code:
 
-* **Original version**: Self-explained
+* **Original version**: Self-explainatory.
 * **No-time version**: Exploring the original code, we noticed that a variable called `time` was declared and setted to 0, then this variable was used in many functions and computations. Most of this computations were expendable knowing that the variable *time* was always zero. Removing this computation and setting its results as constants without computation simplified the code and optimized its performance without modifing this functionality.
 *  **Good-loop version**: One easy way to trick the perfomance of a code is to permutate the index of multiple loops. We have played with many different combinations of loops and found the fastest one, which is the one used in this version.
 *  **Good-loop--no-time version**: This version involve both changes applied in the other versions.
 
-> Pretty figures comparing performance
+```{r}
+get_perf_plots(df.opts, "(comparing optimisations)")
+```
 
-## Functionality
+## Influence of the variable type
 
-In all this process, it is wise to keep in mind that making changes in a code can lead to unexpected results, and this can compromise the functionality of our code. What does functionality mean? The functionality is not altered if the code does exactly what it used to in the exact same way. For instance, if we change all `double` variables with `float` variables, we could spare some memmory space and improve the performance, but we would lose some decimals in our variables, this leads to a loss in **accuracy**. Actually, since all decimal variables present in the code are declared as `float`, we have made the opposite change and studied its consequences:
+In all this process, it is wise to keep in mind that making changes in a code can lead to unexpected results, and this can compromise the functionality of our code. What does functionality mean? The functionality is not altered if the code does exactly what it used to in the exact same way. For instance, if we change all `double` variables with `float` variables, we could spare some memory space and improve the performance, but we would lose some decimals in our variables, this leads to a loss in **accuracy**. Actually, since all decimal variables present in the code are declared as `float`, we have made the opposite change and studied its consequences:
 
-> Pretty figures comparing Accuracy between float/double
+```{r}
+get_acc_plots(df.acc)
+get_perf_plots(df.acc, "(comparing var type)")
+```
 
 Taking a look at the results we can notice how the performance of the program has been deteriorated, but the accuracy has been greatly improved. Thus, we chose to use `double` variables and accept this trade-off. 
-
-Now, we can measure the change in the accuracy of the other changes made and check if the optimiziation of the code has compromised the functionality of the code.
-
-> Pretty figures comparing Accuracy between actual changes in the code.
 
 # Conclusions
 
 The performance of a program is always a crucial point in the development of a code. A small change in the code can lead to impressive differences in the time of execution, differences that can make a difference between a truly useful program and an impractical bunch of code. Is important to take into account that a change in the code can implies a trade-off between performance and functionality, and this means that these changes have to be thoroughly thought over. The good measurement of the performance is thus a key point of this decision making process and an indispensable step in a optimization task.
 
+# References
 
-
-
-
-
-
-
-```{r message=FALSE}
-data1 <- read_results("perf-base1.csv", "base1")
-data2 <- read_results("perf-base2.csv", "base2")
-data3 <- read_results("perf-base3.csv", "base3")
-data4 <- read_results("perf-base4.csv", "base4")
-data.exp <- read_results("perf-exp.csv", "exp")
-
-new.data <- rbind(data1, data.exp)
-```
-```{r}
-get_perf_plots(new.data)
-```
-
-
-
+- [`https://openbenchmarking.org/result/1707017-TR-CLEARLINU79`](https://openbenchmarking.org/result/1707017-TR-CLEARLINU79)
