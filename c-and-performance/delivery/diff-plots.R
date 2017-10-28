@@ -52,7 +52,7 @@ read_results <- function(file, typ) {
 get_acc_plots <- function(df) {
 	ggplot(df, aes(x = reorder(f2si2(size), size), y = acc, fill = type))+
 		geom_bar(stat = "identity", position = "dodge") +
-		scale_y_continuous(trans = mylog_trans(base=10, from=-10 )) +
+		scale_y_continuous(trans = mylog_trans(base = 10, from = -10 )) +
 		labs(title = "Accuracy analysis",
 				 x = "Size of the problem",
 				 y = "Accuracy")
@@ -62,8 +62,8 @@ get_acc_plots <- function(df) {
 get_perf_plots <- function(df, subtitle) {
 	ggplot(df, aes(x = reorder(f2si2(size), size), y = opps, fill = type))+
 		geom_bar(stat = "identity", position = "dodge") +
-		geom_text(aes(y = opps * 1.01, label = round(opps)),
-							vjust = -0.1, position=position_dodge(width=0.9)) +
+		geom_text(aes(y = opps * 1.02, label = round(opps)),
+							vjust = 0, position=position_dodge(width = 0.9)) +
 		labs(title = paste("Performance results", subtitle),
 				 x = "Size of the problem",
 				 y = "Performance (Mega SAXPYs/second)")
@@ -74,7 +74,7 @@ get_time_plots <- function(df) {
 	ggplot(df, aes(x = reorder(f2si2(size), size))) +
 		geom_bar(aes(y = time, fill = "time"), stat = "identity", position = "stack") +
 		geom_bar(aes(y = init, fill = "init"), stat = "identity", position = "stack") +
-		scale_y_continuous(trans = mylog_trans(base=10, from=-4 )) +
+		scale_y_continuous(trans = mylog_trans(base = 10, from = -4 )) +
 		labs(title = "Elapsed time analysis",
 				 x = "Size of the problem",
 				 y = "Time (s)")
