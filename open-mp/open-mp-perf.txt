@@ -1,6 +1,0 @@
-perf stat ./test_X 512 500
-
-4,840977912 seconds time elapsed (NO)
-2,520728297 seconds time elapsed (2T)
-1,684823018 seconds time elapsed (4T)
-0,948313912 seconds time elapsed (8T)

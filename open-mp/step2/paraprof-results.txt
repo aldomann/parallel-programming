@@ -1,0 +1,29 @@
+2 threads
+parallelfor (barrier enter/exit)
+0.002 s
+parallelfor (loop body)
+6.684 s
+parallelfor (parallel begin/end)
+2.2E-4 s
+parallelfor (parallel fork/join)
+0.001 s
+
+4 threads
+parallelfor (barrier enter/exit)
+0.007 s
+parallelfor (loop body)
+5.65 s
+parallelfor (parallel begin/end)
+3.3E-4 s
+parallelfor (parallel fork/join)
+0.033 s
+
+8 threads
+parallelfor (barrier enter/exit)
+0.016 s
+parallelfor (loop body)
+2.788 s
+parallelfor (parallel begin/end)
+4.2E-4 s
+parallelfor (parallel fork/join)
+0.002 s
