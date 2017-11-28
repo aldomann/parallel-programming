@@ -1,0 +1,21 @@
+20 dynamic_trace_events
+# FunctionId Group Tag "Name Type" Parameters
+0 TAUEVENT 0 ".TAU <unknown event>" TriggerValue
+1 TAU_USER 0 ".TAU application " EntryExit
+2 TAU_DEFAULT 0 "addr=<0x41bbbd> [{(unknown)} {0,0}] " EntryExit
+3 TAU_DEFAULT 0 "addr=<0x41bab1> [{(unknown)} {0,0}] " EntryExit
+4 TAU_DEFAULT 0 "addr=<0x41b9d3> [{(unknown)} {0,0}] " EntryExit
+5 OpenMP 0 "parallelfor (parallel fork/join) [OpenMP location: file:/home/master/ppM/ppM-1-10/Code/open-mp/lapFusion8.c <21, 28>] " EntryExit
+6 OpenMP 0 "parallelfor (parallel begin/end) [OpenMP location: file:/home/master/ppM/ppM-1-10/Code/open-mp/lapFusion8.c <21, 28>] " EntryExit
+7 OpenMP 0 "parallelfor (loop body) [OpenMP location: file:/home/master/ppM/ppM-1-10/Code/open-mp/lapFusion8.c <21, 28>] " EntryExit
+8 TAU_DISABLE 0 "addr=<0x41b8ee> [{(unknown)} {0,0}] [THROTTLED]" EntryExit
+9 TAU_DISABLE 0 "addr=<0x41b958> [{(unknown)} {0,0}] [THROTTLED]" EntryExit
+10 OpenMP 0 "parallelfor (barrier enter/exit) [OpenMP location: file:/home/master/ppM/ppM-1-10/Code/open-mp/lapFusion8.c <21, 28>] " EntryExit
+60000 TRACER 0 "EV_INIT" none
+60001 TRACER 0 "FLUSH" EntryExit
+60003 TRACER 0 "FLUSH_CLOSE" none
+60004 TRACER 0 "FLUSH_INITM" none
+60005 TRACER 0 "WALL_CLOCK" none
+60006 TRACER 0 "CONT_EVENT" none
+60007 TAU_MESSAGE -7 "MESSAGE_SEND" par
+60008 TAU_MESSAGE -8 "MESSAGE_RECV" par
