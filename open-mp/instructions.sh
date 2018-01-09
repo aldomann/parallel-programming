@@ -7,6 +7,7 @@ module load openmpi/1.8.1
 cd tau-2.26
 ./configure -prefix=/home/master/ppM/ppM-1-10/my_TAU -openmp -opari
 ./configure -prefix=/home/master/ppM/ppM-1-10/my_TAU -openmp -opari -papi=/soft/papi-5.4.3
+./configure ­-prefix=/home/master/ppM/ppM-1-10/my_TAU –mpi -openmpi
 
 # USE TAU
 module load gcc/6.1.0

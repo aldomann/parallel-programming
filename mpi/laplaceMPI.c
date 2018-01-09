@@ -67,7 +67,6 @@ int main( int argc, char** argv ) {
 	// Set boundary conditions
 	laplace_init (A, n);
 	laplace_init (temp, n);
-	// A[(n/128)*n+n/128] = 1.0f; // set singular point
 
 	printf("Jacobi relaxation Calculation: %d x %d mesh, "
 		   " maximum of %d iterations\n",
@@ -80,7 +79,7 @@ int main( int argc, char** argv ) {
 	MPI_Status status;
 
 	// Define the partition of the matrix
-	int m = n/size; // MUST BE INTEGER!!!
+	int m = n/size;
 	int ri = rank * m;
 	int rf = (rank+1) * m-1;
 
@@ -104,7 +103,7 @@ int main( int argc, char** argv ) {
 			MPI_Recv(&A[(rf+1)*n], n, MPI_FLOAT, rank+1, 1, MPI_COMM_WORLD, &status);
 		}
 
-		// Computation of the laplace step using MPI
+		// Computation of the Laplace Step using MPI
 		if ( rank == 0 ) {
 			for ( j = ri+1; j <= rf; j++ ) {
 				for ( i = 1; i < n-1; i++ ) {
