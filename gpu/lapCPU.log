@@ -1,0 +1,21 @@
+main:
+     59, Loop not fused: dependence chain to sibling loop
+         Generated vector simd code for the loop
+     65, Loop not fused: function call before adjacent loop
+         Generated vector simd code for the loop
+     77, Loop not vectorized/parallelized: potential early exits
+     79, Loop interchange produces reordered loop nest: 80,79
+         Generated an alternate version of the loop
+         Generated vector simd code for the loop
+         Generated 3 prefetch instructions for the loop
+         Generated vector simd code for the loop
+         Generated 3 prefetch instructions for the loop
+     80, Loop not fused: dependence chain to sibling loop
+     84, Loop not fused: dependence chain to sibling loop
+         Generated 5 prefetches in scalar loop
+     85, Generated vector simd code for the loop containing reductions
+         Residual loop unrolled 6 times (completely unrolled)
+     88, Loop interchange produces reordered loop nest: 89,88
+         Generated vector simd code for the loop
+         Generated a prefetch instruction for the loop
+     89, Loop not fused: function call before adjacent loop
