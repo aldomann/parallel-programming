@@ -1,0 +1,6 @@
+Time(%),Time,Calls,Avg,Min,Max,Name
+50.23%,6.58691s,2250,2.9275ms,992ns,3.6403ms,[CUDAmemcpyHtoD]
+41.83%,5.48496s,2250,2.4378ms,2.1750us,2.7486ms,[CUDAmemcpyDtoH]
+5.41%,709.24ms,250,2.8370ms,2.8144ms,2.8608ms,main_82_gpu
+2.17%,285.17ms,250,1.1407ms,1.1392ms,1.1420ms,main_88_gpu
+0.35%,46.243ms,250,184.97us,184.32us,186.62us,main_84_gpu_red
