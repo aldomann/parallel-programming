@@ -1,28 +1,28 @@
-Jacobi relaxation Calculation: 4096 x 4096 mesh, maximum of 100 iterations
-   10, 0.155006
-   20, 0.110024
-   30, 0.089901
-   40, 0.077374
+Jacobi relaxation Calculation: 4096 x 4096 mesh, maximum of 250 iterations
+   25, 0.097815
    50, 0.069623
-   60, 0.063285
-   70, 0.058825
-   80, 0.054946
-   90, 0.051831
+   75, 0.056817
   100, 0.049208
+  125, 0.044009
+  150, 0.040146
+  175, 0.037165
+  200, 0.034790
+  225, 0.032779
+  250, 0.031112
 
- Performance counter stats for './lapCPU-baseline 100':
+ Performance counter stats for './lapCPU1 250':
 
-      39532,855500      task-clock (msec)         #    0,997 CPUs utilized          
-             2.032      context-switches          #    0,051 K/sec                  
-                 2      cpu-migrations            #    0,000 K/sec                  
-            33.130      page-faults               #    0,838 K/sec                  
-   133.325.010.887      cycles                    #    3,373 GHz                    
-   125.994.418.679      stalled-cycles-frontend   #   94,50% frontend cycles idle   
-   108.019.555.707      stalled-cycles-backend    #   81,02% backend  cycles idle   
-    16.152.726.273      instructions              #    0,12  insns per cycle        
-                                                  #    7,80  stalled cycles per insn
-     1.204.281.819      branches                  #   30,463 M/sec                  
-         2.686.712      branch-misses             #    0,22% of all branches        
+     135040,073076      task-clock (msec)         #    0,998 CPUs utilized
+             6.893      context-switches          #    0,051 K/sec
+                11      cpu-migrations            #    0,000 K/sec
+               940      page-faults               #    0,007 K/sec
+   455.527.815.024      cycles                    #    3,373 GHz
+   438.297.473.898      stalled-cycles-frontend   #   96,22% frontend cycles idle
+   382.598.652.063      stalled-cycles-backend    #   83,99% backend  cycles idle
+    40.263.280.092      instructions              #    0,09  insns per cycle
+                                                  #   10,89  stalled cycles per insn
+     2.991.772.017      branches                  #   22,155 M/sec
+         6.234.128      branch-misses             #    0,21% of all branches
 
-      39,633168315 seconds time elapsed
+     135,323800221 seconds time elapsed
 

@@ -1,19 +1,19 @@
-Jacobi relaxation Calculation: 4096 x 4096 mesh, maximum of 100 iterations
-Total Iterations:   100, ERROR: 0.079589, A[32][32]= 0.006335
+Jacobi relaxation Calculation: 4096 x 4096 mesh, maximum of 250 iterations
+Total Iterations:   250, ERROR: 0.050431, A[32][32]= 0.002644
 
- Performance counter stats for './lapCPU-Fusion-good 4096 100':
+ Performance counter stats for './lapCPU3 4096 250':
 
-       3920,361445      task-clock (msec)         #    0,980 CPUs utilized          
-               209      context-switches          #    0,053 K/sec                  
-                 2      cpu-migrations            #    0,001 K/sec                  
-            33.133      page-faults               #    0,008 M/sec                  
-    13.028.805.282      cycles                    #    3,323 GHz                    
-     4.748.779.459      stalled-cycles-frontend   #   36,45% frontend cycles idle   
-       616.961.436      stalled-cycles-backend    #    4,74% backend  cycles idle   
-    22.777.296.772      instructions              #    1,75  insns per cycle        
-                                                  #    0,21  stalled cycles per insn
-       862.522.725      branches                  #  220,011 M/sec                  
-           889.739      branch-misses             #    0,10% of all branches        
+       9398,320984      task-clock (msec)         #    0,996 CPUs utilized
+               492      context-switches          #    0,052 K/sec
+                 1      cpu-migrations            #    0,000 K/sec
+             1.452      page-faults               #    0,154 K/sec
+    31.513.085.276      cycles                    #    3,353 GHz
+    10.743.529.623      stalled-cycles-frontend   #   34,09% frontend cycles idle
+     1.100.923.784      stalled-cycles-backend    #    3,49% backend  cycles idle
+    56.659.263.708      instructions              #    1,80  insns per cycle
+                                                  #    0,19  stalled cycles per insn
+     2.108.370.933      branches                  #  224,335 M/sec
+         1.828.787      branch-misses             #    0,09% of all branches
 
-       4,000224705 seconds time elapsed
+       9,433918907 seconds time elapsed
 
