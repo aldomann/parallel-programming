@@ -1,0 +1,28 @@
+Jacobi relaxation Calculation: 4096 x 4096 mesh, maximum of 100 iterations
+   10, 0.155006
+   20, 0.110024
+   30, 0.089901
+   40, 0.077374
+   50, 0.069623
+   60, 0.063285
+   70, 0.058825
+   80, 0.054946
+   90, 0.051831
+  100, 0.049208
+
+ Performance counter stats for './lapCPU-baseline 100':
+
+      39532,855500      task-clock (msec)         #    0,997 CPUs utilized          
+             2.032      context-switches          #    0,051 K/sec                  
+                 2      cpu-migrations            #    0,000 K/sec                  
+            33.130      page-faults               #    0,838 K/sec                  
+   133.325.010.887      cycles                    #    3,373 GHz                    
+   125.994.418.679      stalled-cycles-frontend   #   94,50% frontend cycles idle   
+   108.019.555.707      stalled-cycles-backend    #   81,02% backend  cycles idle   
+    16.152.726.273      instructions              #    0,12  insns per cycle        
+                                                  #    7,80  stalled cycles per insn
+     1.204.281.819      branches                  #   30,463 M/sec                  
+         2.686.712      branch-misses             #    0,22% of all branches        
+
+      39,633168315 seconds time elapsed
+

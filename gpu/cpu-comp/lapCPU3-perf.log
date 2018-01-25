@@ -1,0 +1,19 @@
+Jacobi relaxation Calculation: 4096 x 4096 mesh, maximum of 100 iterations
+Total Iterations:   100, ERROR: 0.079589, A[32][32]= 0.006335
+
+ Performance counter stats for './lapCPU-Fusion-good 4096 100':
+
+       3920,361445      task-clock (msec)         #    0,980 CPUs utilized          
+               209      context-switches          #    0,053 K/sec                  
+                 2      cpu-migrations            #    0,001 K/sec                  
+            33.133      page-faults               #    0,008 M/sec                  
+    13.028.805.282      cycles                    #    3,323 GHz                    
+     4.748.779.459      stalled-cycles-frontend   #   36,45% frontend cycles idle   
+       616.961.436      stalled-cycles-backend    #    4,74% backend  cycles idle   
+    22.777.296.772      instructions              #    1,75  insns per cycle        
+                                                  #    0,21  stalled cycles per insn
+       862.522.725      branches                  #  220,011 M/sec                  
+           889.739      branch-misses             #    0,10% of all branches        
+
+       4,000224705 seconds time elapsed
+

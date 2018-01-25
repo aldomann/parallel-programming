@@ -1,0 +1,10 @@
+main:
+     76, Generating implicit copy(Anew[4097:16769022])
+         Generating implicit copyin(A[1:16777214])
+     77, Complex loop carried dependence of A->,Anew-> prevents parallelization
+         Accelerator scalar kernel generated
+         Accelerator kernel generated
+         Generating Tesla code
+         77, #pragma acc loop seq
+         78, #pragma acc loop seq
+     78, Complex loop carried dependence of A->,Anew-> prevents parallelization

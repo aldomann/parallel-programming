@@ -45,16 +45,16 @@ int main(int argc, char** argv)
 {
     int i, j;
     int iter_max = 1000;
-    
+
     const float pi  = 2.0f * asinf(1.0f);
     const float tol = 3.0e-3f;
-    float error= 1.0f;    
+    float error= 1.0f;
 
     // obtener argumentos proporcionados en tiempo de ejecucion
     if (argc>1) {  iter_max = atoi(argv[1]); }
 
     memset(A, 0, n * m * sizeof(float));
-    
+
     //  set boundary conditions
     for (i=0; i < m; i++)
     {
@@ -69,24 +69,23 @@ int main(int argc, char** argv)
        A[j][m-1] = y[j]*expf(-pi);
     }
 
-    printf("Jacobi relaxation Calculation: %d x %d mesh, maximum of %d iterations\n", 
+    printf("Jacobi relaxation Calculation: %d x %d mesh, maximum of %d iterations\n",
            n, m, iter_max );
 
     int iter = 0;
 
     while ( error > tol && iter < iter_max )
     {
-       for( i=1; i < m-1; i++ )
-          for( j=1; j < n-1; j++)
+      error = 0.f;
+    	#pragma acc kernels
+       for( j=1; j < n-1; j++ )
+          for( i=1; i < m-1; i++){
               Anew[j][i] = ( A[j][i+1]+A[j][i-1]+A[j-1][i]+A[j+1][i]) / 4;
+              error = fmaxf( error, sqrtf( fabsf( Anew[j][i]-A[j][i] ) ) );}
 
-       error = 0.f;
-       for( i=1; i < m-1; i++ )
-          for( j=1; j < n-1; j++)
-              error = fmaxf( error, sqrtf( fabsf( Anew[j][i]-A[j][i] ) ) );
-
-       for( i=1; i < m-1; i++ )
-          for( j=1; j < n-1; j++)
+		#pragma acc kernels
+       for( j=1; j < n-1; j++ )
+          for( i=1; i < m-1; i++)
                A[j][i] = Anew[j][i];
 
        iter++;
