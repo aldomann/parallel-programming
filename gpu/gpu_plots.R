@@ -4,14 +4,14 @@ library(data.table)
 # Functions ------------------------------------------------
 
 transform_times <- function(time) {
-	ifelse( grepl("ns", time), as.numeric(gsub("[a-z]", "", as.character(time)))/10^9,
-					ifelse( grepl("us", time), as.numeric(gsub("[a-z]", "", as.character(time)))/10^6,
-									ifelse( grepl("ms", time), as.numeric(gsub("[a-z]", "", as.character(time)))/10^3,
-													ifelse( grepl("s", time), as.numeric(gsub("[a-z]", "", as.character(time))),
+	ifelse( grepl("ns", time), as.numeric(gsub("[a-z]", "", time))/10^9,
+					ifelse( grepl("us", time), as.numeric(gsub("[a-z]", "", time))/10^6,
+									ifelse( grepl("ms", time), as.numeric(gsub("[a-z]", "", time))/10^3,
+													ifelse( grepl("s", time), as.numeric(gsub("[a-z]", "", time)),
 																	time ))))
 }
 
-clean_data <- function(df) {
+clean_data<- function(df) {
 	data_clean <- df %>%
 		mutate(Time = transform_times(Time)) %>%
 		mutate(Avg = transform_times(Avg)) %>%
@@ -19,8 +19,8 @@ clean_data <- function(df) {
 		mutate(Max = transform_times(Max))
 
 	data_clean <- data_clean %>%
-		mutate(Perc = Time/sum(Time)) %>%
-		select(Perc = Time..., Time, Avg, Min, Max, Calls, Name)
+		select(Perc = `Time(%)`, Time, Avg, Min, Max, Calls, Name) %>%
+		mutate(Perc = Time/sum(Time))
 
 	return(data_clean)
 }
@@ -54,14 +54,14 @@ plot_perf_comparison <- function(df) {
 setwd("/home/aldomann/Code/C/parallel-programming/gpu")
 
 # Read RAW data
-data_gpu1 <- read.csv("results/lapGPU1.dat", header = T)
-data_gpu2 <- read.csv("results/lapGPU2.dat", header = T)
-data_gpu3 <- read.csv("results/lapGPU3.dat", header = T)
-data_gpu4 <- read.csv("results/lapGPU4.dat", header = T)
-data_cpu1 <- read.csv("results/lapCPU1.dat", header = F)[1,]
-data_cpu2 <- read.csv("results/lapCPU2.dat", header = F)[1,]
-data_cpu3 <- read.csv("results/lapCPU3.dat", header = F)[1,]
-data_cpu4 <- read.csv("results/lapCPU4.dat", header = F)[1,]
+data_gpu1 <- fread("results/lapGPU1.dat")
+data_gpu2 <- fread("results/lapGPU2.dat")
+data_gpu3 <- fread("results/lapGPU3.dat")
+data_gpu4 <- fread("results/lapGPU4.dat")
+data_cpu1 <- fread("results/lapCPU1.dat")$V1
+data_cpu2 <- fread("results/lapCPU2.dat")$V1
+data_cpu3 <- fread("results/lapCPU3.dat")$V1
+data_cpu4 <- fread("results/lapCPU4.dat")$V1
 
 # Clean RAW data
 data_gpu1 <- clean_data(data_gpu1)
