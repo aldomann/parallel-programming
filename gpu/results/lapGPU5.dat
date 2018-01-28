@@ -4,3 +4,4 @@ Time(%),Time,Calls,Avg,Min,Max,Name
 3.37%,884.41ms,5000,176.88us,175.20us,185.82us,main_92_gpu_red
 3.37%,884.23ms,5000,176.85us,175.10us,186.21us,main_86_gpu_red
 0.13%,34.184ms,10008,3.4150us,959ns,3.2756ms,[CUDAmemcpyHtoD]
+0.07%,19.122ms,10000,1.9120us,1.8870us,3.9040us,[CUDAmemcpyDtoH]

@@ -76,11 +76,11 @@ data.cpu4 <- data.cpu4 * 40
 # Clean RAW data
 data.gpu1.bad <- clean_data(data.gpu1.bad)
 data.gpu1 <- clean_data(data.gpu1)
-data.gpu2 <- clean_data(data.gpu2[1:5,])
-data.gpu3 <- clean_data(data.gpu3[1:5,])
-data.gpu4 <- clean_data(data.gpu4[1:5,])
-data.gpu5 <- clean_data(data.gpu5[1:5,])
-data.gpu6 <- clean_data(data.gpu6[1:5,])
+data.gpu2 <- clean_data(data.gpu2)
+data.gpu3 <- clean_data(data.gpu3)
+data.gpu4 <- clean_data(data.gpu4)
+data.gpu5 <- clean_data(data.gpu5)
+data.gpu6 <- clean_data(data.gpu6)
 
 # Fix GPU1 (bad) results
 # data.gpu1.bad <- data.gpu1.bad %>%
@@ -116,16 +116,18 @@ times <- rbind(times.cpu, times.gpu)
 
 # Analysis -------------------------------------------------
 
+# Timelines for the GPU
 plot_timeline(data.gpu1.bad, "Time", "lapGPU1 (bad)") #+ theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "timeline-gpu1b.pdf", width = 5, height = 2, dpi = 96, device = cairo_pdf)
 plot_timeline(data.gpu1, "Time", "lapGPU1") #+ theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "timeline-gpu1.pdf", width = 5, height = 2, dpi = 96, device = cairo_pdf)
-plot_timeline(data.gpu2, "Time", "lapGPU2") + theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "timeline-gpu2.pdf", width = 5, height = 2, dpi = 96, device = cairo_pdf)
-plot_timeline(data.gpu3, "Time", "lapGPU3") + theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "timeline-gpu3.pdf", width = 5, height = 2, dpi = 96, device = cairo_pdf)
-plot_timeline(data.gpu4, "Time", "lapGPU4") + theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "timeline-gpu4.pdf", width = 5, height = 2, dpi = 96, device = cairo_pdf)
-plot_timeline(data.gpu5, "Time", "lapGPU5") + theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "timeline-gpu5.pdf", width = 5, height = 2, dpi = 96, device = cairo_pdf)
-plot_timeline(data.gpu6, "Time", "lapGPU6") + theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "timeline-gpu6.pdf", width = 5, height = 2, dpi = 96, device = cairo_pdf)
+plot_timeline(data.gpu2, "Time", "lapGPU2") #+ theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "timeline-gpu2.pdf", width = 5, height = 2, dpi = 96, device = cairo_pdf)
+plot_timeline(data.gpu3, "Time", "lapGPU3") #+ theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "timeline-gpu3.pdf", width = 5, height = 2, dpi = 96, device = cairo_pdf)
+plot_timeline(data.gpu4, "Time", "lapGPU4") #+ theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "timeline-gpu4.pdf", width = 5, height = 2, dpi = 96, device = cairo_pdf)
+plot_timeline(data.gpu5, "Time", "lapGPU5") #+ theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "timeline-gpu5.pdf", width = 5, height = 2, dpi = 96, device = cairo_pdf)
+plot_timeline(data.gpu6, "Time", "lapGPU6") #+ theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "timeline-gpu6.pdf", width = 5, height = 2, dpi = 96, device = cairo_pdf)
 
-plot_perf_comparison(times, margin = 300, padding = 10) + theme_bw() #+ theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "times-all.pdf", width = 6.5, height = 3.5, dpi = 96, device = cairo_pdf)
-
+# Comparison plots
 plot_perf_comparison(times.cpu, margin = 500) + theme_bw() #+ theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "times-cpu.pdf", width = 6, height = 2.75, dpi = 96, device = cairo_pdf)
 
 plot_perf_comparison(times.gpu, margin = 5, padding = 1) + theme_bw() #+ theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "times-gpu.pdf", width = 6, height = 2.75, dpi = 96, device = cairo_pdf)
+
+plot_perf_comparison(times, margin = 300, padding = 10) + theme_bw() #+ theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "times-all.pdf", width = 6.5, height = 3.5, dpi = 96, device = cairo_pdf)
