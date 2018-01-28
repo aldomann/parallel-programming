@@ -1,7 +1,7 @@
 #!/usr/bin/awk -f
 
 # Authors: Alfredo Hernández <aldomann.designs@gmail.com>
-#          Ruth Kristianingsih <ruth.kristianingsih@mathmods.eu>
+#          Alejandro Jiménez <aljrico@gmail.com>
 
 # Legal Stuff:
 #	This script is free software: you can redistribute it and/or modify
@@ -19,6 +19,6 @@
 BEGIN{
 	OFS = ","
 }
-NR >= 15 && NR <=20 {
+NR >= 4 && NR <=10 {
 	print $1, $2, $3, $4, $5, $6, $7 $8 $9
 }

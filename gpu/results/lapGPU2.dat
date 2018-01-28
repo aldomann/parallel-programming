@@ -1,6 +1,7 @@
 Time(%),Time,Calls,Avg,Min,Max,Name
-50.23%,6.58691s,2250,2.9275ms,992ns,3.6403ms,[CUDAmemcpyHtoD]
-41.83%,5.48496s,2250,2.4378ms,2.1750us,2.7486ms,[CUDAmemcpyDtoH]
-5.41%,709.24ms,250,2.8370ms,2.8144ms,2.8608ms,main_82_gpu
-2.17%,285.17ms,250,1.1407ms,1.1392ms,1.1420ms,main_88_gpu
-0.35%,46.243ms,250,184.97us,184.32us,186.62us,main_84_gpu_red
+67.68%,26.3407s,10000,2.6341ms,2.6199ms,2.9643ms,main_83_gpu
+27.66%,10.7648s,10000,1.0765ms,1.0750ms,1.1412ms,main_89_gpu
+4.50%,1.75210s,10000,175.21us,174.43us,185.57us,main_85_gpu_red
+0.11%,42.595ms,10008,4.2560us,959ns,4.5667ms,[CUDAmemcpyHtoD]
+0.05%,19.851ms,10000,1.9850us,1.8550us,4.0960us,[CUDAmemcpyDtoH]
+,,,,,,
