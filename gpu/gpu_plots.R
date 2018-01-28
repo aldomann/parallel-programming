@@ -37,11 +37,11 @@ plot_timeline <- function(df, time_col, name) {
 				 y = "Time (s)")
 }
 
-plot_perf_comparison <- function(df, margin = 50, padding = 5) {
+plot_perf_comparison <- function(df, margin = 50, padding = 5, dig.round = 2) {
 	df <- df %>% mutate(Time = Time)
 	ggplot(df, aes(x = Program, y = Time, fill = Program)) +
 		geom_bar(stat = "identity", position = "dodge") +
-		geom_text(aes(y = Time + padding, label = round(Time, digits = 2)),
+		geom_text(aes(y = Time + padding, label = round(Time, digits = dig.round)),
 							vjust = 0, position=position_dodge(width = 0.9)) +
 		labs(title = "Performance comparison (10000 iterations)",
 				 x = "Version of the program",
@@ -130,4 +130,4 @@ plot_perf_comparison(times.cpu, margin = 500) + theme_bw() #+ theme(text = eleme
 
 plot_perf_comparison(times.gpu, margin = 5, padding = 1) + theme_bw() #+ theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "times-gpu.pdf", width = 6, height = 2.75, dpi = 96, device = cairo_pdf)
 
-plot_perf_comparison(times, margin = 300, padding = 10) + theme_bw() #+ theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "times-all.pdf", width = 6.5, height = 3.5, dpi = 96, device = cairo_pdf)
+plot_perf_comparison(times, margin = 300, padding = 10, dig.round = 1) + theme_bw() #+ theme(text = element_text(family = "LM Roman 10")) + ggsave(filename = "times-all.pdf", width = 6.5, height = 3.5, dpi = 96, device = cairo_pdf)
