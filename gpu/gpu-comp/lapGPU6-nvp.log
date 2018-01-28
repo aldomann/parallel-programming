@@ -1,0 +1,35 @@
+==15932== NVPROF is profiling process 15932, command: ./lapGPU6 10000
+==15932== Profiling application: ./lapGPU6 10000
+==15932== Profiling result:
+Time(%)      Time     Calls       Avg       Min       Max  Name
+ 46.38%  11.4739s      5000  2.2948ms  2.2760ms  2.4660ms  main_90_gpu
+ 46.29%  11.4517s      5000  2.2903ms  2.2689ms  2.6150ms  main_84_gpu
+  3.56%  880.59ms      5000  176.12us  174.78us  186.01us  main_92_gpu_red
+  3.56%  880.43ms      5000  176.09us  174.72us  186.24us  main_86_gpu_red
+  0.14%  34.560ms     10008  3.4530us     959ns  3.3392ms  [CUDA memcpy HtoD]
+  0.08%  19.122ms     10000  1.9120us  1.8870us  3.7120us  [CUDA memcpy DtoH]
+
+==15932== API calls:
+Time(%)      Time     Calls       Avg       Min       Max  Name
+ 98.39%  24.7949s     10000  2.4795ms  2.1298ms  2.7910ms  cuMemcpyDtoHAsync
+  0.64%  161.14ms     20000  8.0560us  6.2620us  343.79us  cuLaunchKernel
+  0.33%  82.959ms         2  41.479ms     377ns  82.958ms  cuDevicePrimaryCtxRetain
+  0.22%  54.324ms     10008  5.4280us  4.6670us  113.06us  cuMemcpyHtoDAsync
+  0.17%  44.031ms         1  44.031ms  44.031ms  44.031ms  cuDevicePrimaryCtxRelease
+  0.11%  26.904ms         1  26.904ms  26.904ms  26.904ms  cuMemHostAlloc
+  0.07%  18.043ms     20001     902ns     376ns  3.3959ms  cuStreamSynchronize
+  0.05%  11.387ms         1  11.387ms  11.387ms  11.387ms  cuMemFreeHost
+  0.01%  3.6169ms         5  723.38us  163.63us  2.8316ms  cuMemAlloc
+  0.00%  1.2282ms         6  204.70us  1.3320us  633.33us  cuEventSynchronize
+  0.00%  643.40us         1  643.40us  643.40us  643.40us  cuMemAllocHost
+  0.00%  353.46us         1  353.46us  353.46us  353.46us  cuModuleLoadData
+  0.00%  30.823us         1  30.823us  30.823us  30.823us  cuStreamCreate
+  0.00%  20.986us         7  2.9980us  2.0810us  4.9130us  cuEventRecord
+  0.00%  9.7570us         3  3.2520us     302ns  8.8100us  cuCtxSetCurrent
+  0.00%  4.2610us         1  4.2610us  4.2610us  4.2610us  cuEventCreate
+  0.00%  3.3150us         2  1.6570us     414ns  2.9010us  cuDeviceGetCount
+  0.00%  2.7430us         4     685ns     183ns  1.7700us  cuModuleGetFunction
+  0.00%  2.5390us         1  2.5390us  2.5390us  2.5390us  cuMemFree
+  0.00%     895ns         2     447ns     446ns     449ns  cuDeviceGet
+  0.00%     494ns         1     494ns     494ns     494ns  cuDeviceComputeCapability
+  0.00%     327ns         1     327ns     327ns     327ns  cuCtxGetCurrent

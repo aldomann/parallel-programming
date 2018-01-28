@@ -4,13 +4,13 @@ main:
      84, Loop is parallelizable
          Accelerator kernel generated
          Generating Tesla code
-         83, #pragma acc loop gang, vector(4) /* blockIdx.y threadIdx.y */
-         84, #pragma acc loop gang, vector(32) /* blockIdx.x threadIdx.x */
+         83, #pragma acc loop gang /* blockIdx.y */
+         84, #pragma acc loop gang, vector(128) /* blockIdx.x threadIdx.x */
          87, Generating implicit reduction(max:error)
      91, Loop is parallelizable
      92, Loop is parallelizable
          Accelerator kernel generated
          Generating Tesla code
-         91, #pragma acc loop gang, vector(4) /* blockIdx.y threadIdx.y */
-         92, #pragma acc loop gang, vector(32) /* blockIdx.x threadIdx.x */
+         91, #pragma acc loop gang /* blockIdx.y */
+         92, #pragma acc loop gang, vector(128) /* blockIdx.x threadIdx.x */
          95, Generating implicit reduction(max:error)

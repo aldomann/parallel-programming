@@ -1,14 +1,3 @@
-Jacobi relaxation Calculation: 4096 x 4096 mesh, maximum of 250 iterations
-   25, 0.097815
-   50, 0.069623
-   75, 0.056817
-  100, 0.049208
-  125, 0.044009
-  150, 0.040146
-  175, 0.037165
-  200, 0.034790
-  225, 0.032779
-  250, 0.031112
 
  Performance counter stats for './lapCPU1 250':
 

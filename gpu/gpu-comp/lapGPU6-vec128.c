@@ -74,20 +74,24 @@ int main(int argc, char** argv)
 
 	int iter = 0;
 
+	#pragma acc data copyin(A,Anew)
 	while ( error > tol && iter < iter_max )
 	{
-		for( i=1; i < m-1; i++ )
-			for( j=1; j < n-1; j++)
-				Anew[j][i] = ( A[j][i+1]+A[j][i-1]+A[j-1][i]+A[j+1][i]) / 4;
-
 		error = 0.f;
-		for( i=1; i < m-1; i++ )
-			for( j=1; j < n-1; j++)
-				error = fmaxf( error, sqrtf( fabsf( Anew[j][i]-A[j][i] ) ) );
-
-		for( i=1; i < m-1; i++ )
-			for( j=1; j < n-1; j++)
-				A[j][i] = Anew[j][i];
+		if(iter % 2 == 0){
+			#pragma acc kernels vector_length(128)
+			for( j=1; j < n-1; j++){
+				for( i=1; i < m-1; i++ ){
+					Anew[j][i] = ( A[j][i+1]+A[j][i-1]+A[j-1][i]+A[j+1][i])*0.25f;
+					error = fmaxf( error, fabsf( Anew[j][i]-A[j][i] ) );}}
+		} else{
+			#pragma acc kernels vector_length(128)
+			for( j=1; j < n-1; j++){
+				for( i=1; i < m-1; i++ ){
+					A[j][i] = ( Anew[j][i+1]+Anew[j][i-1]+Anew[j-1][i]+Anew[j+1][i])*0.25f;
+					error = fmaxf( error, fabsf( A[j][i]-Anew[j][i] ) );}}
+		}
+		error = sqrtf(error);
 
 		iter++;
 		if(iter % (iter_max/10) == 0) printf("%5d, %0.6f\n", iter, error);

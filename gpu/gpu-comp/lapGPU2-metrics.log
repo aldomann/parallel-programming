@@ -1,0 +1,15 @@
+==32149== NVPROF is profiling process 32149, command: ./lapGPU2 100
+==32149== Some kernel(s) will be replayed on device 0 in order to collect all events/metrics.
+==32149== Profiling application: ./lapGPU2 100
+==32149== Profiling result:
+==32149== Metric result:
+Invocations                               Metric Name                        Metric Description         Min         Max         Avg
+Device "GeForce GTX 680 (0)"
+	Kernel: main_82_gpu
+        100                             inst_executed                     Instructions Executed    46266294    46516028    46363722
+        100                            l2_utilization                      L2 Cache Utilization     Mid (4)     Mid (4)     Mid (4)
+        100                          dram_utilization                 Device Memory Utilization     Low (3)     Low (3)     Low (3)
+        100                      dram_read_throughput             Device Memory Read Throughput  23.090GB/s  23.461GB/s  23.281GB/s
+        100                     dram_write_throughput            Device Memory Write Throughput  24.067GB/s  24.306GB/s  24.181GB/s
+        100                                       ipc                              Executed IPC    1.989311    2.014151    2.001180
+        100                             sm_efficiency                   Multiprocessor Activity      99.85%      99.87%      99.86%

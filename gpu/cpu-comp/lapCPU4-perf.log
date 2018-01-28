@@ -1,19 +1,17 @@
-Jacobi relaxation Calculation: 4096 x 4096 mesh, maximum of 250 iterations
-Total Iterations:   250, ERROR: 0.050431, A[32][32]= 0.002644
 
  Performance counter stats for './lapCPU4 4096 250':
 
-      12495,652401      task-clock (msec)         #    2,948 CPUs utilized
-               669      context-switches          #    0,054 K/sec
-                 8      cpu-migrations            #    0,001 K/sec
-             1.333      page-faults               #    0,107 K/sec
-    40.156.874.045      cycles                    #    3,214 GHz
-    32.173.715.061      stalled-cycles-frontend   #   80,12% frontend cycles idle
-    22.494.359.366      stalled-cycles-backend    #   56,02% backend  cycles idle
-    19.240.800.882      instructions              #    0,48  insns per cycle
-                                                  #    1,67  stalled cycles per insn
-     1.126.676.234      branches                  #   90,165 M/sec
-         2.958.475      branch-misses             #    0,26% of all branches
+      12455,126182      task-clock (msec)         #    2,918 CPUs utilized          
+               818      context-switches          #    0,066 K/sec                  
+                14      cpu-migrations            #    0,001 K/sec                  
+             1.333      page-faults               #    0,107 K/sec                  
+    39.858.103.278      cycles                    #    3,200 GHz                    
+    31.452.914.211      stalled-cycles-frontend   #   78,91% frontend cycles idle   
+    21.887.787.983      stalled-cycles-backend    #   54,91% backend  cycles idle   
+    19.370.507.617      instructions              #    0,49  insns per cycle        
+                                                  #    1,62  stalled cycles per insn
+     1.163.672.659      branches                  #   93,429 M/sec                  
+         2.494.191      branch-misses             #    0,21% of all branches        
 
-       4,238235182 seconds time elapsed
+       4,268119728 seconds time elapsed
 

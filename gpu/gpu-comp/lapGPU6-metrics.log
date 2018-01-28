@@ -1,0 +1,15 @@
+==9624== NVPROF is profiling process 9624, command: ./lapGPU6 100
+==9624== Some kernel(s) will be replayed on device 0 in order to collect all events/metrics.
+==9624== Profiling application: ./lapGPU6 100
+==9624== Profiling result:
+==9624== Metric result:
+Invocations                               Metric Name                        Metric Description         Min         Max         Avg
+Device "GeForce GTX 680 (0)"
+	Kernel: main_84_gpu
+         50                             inst_executed                     Instructions Executed    41005504    41005504    41005504
+         50                            l2_utilization                      L2 Cache Utilization     Mid (4)     Mid (4)     Mid (4)
+         50                          dram_utilization                 Device Memory Utilization     Mid (4)     Mid (4)     Mid (4)
+         50                      dram_read_throughput             Device Memory Read Throughput  26.723GB/s  26.836GB/s  26.781GB/s
+         50                     dram_write_throughput            Device Memory Write Throughput  27.891GB/s  27.972GB/s  27.929GB/s
+         50                                       ipc                              Executed IPC    2.030650    2.045110    2.037747
+         50                             sm_efficiency                   Multiprocessor Activity      99.84%      99.85%      99.85%
