@@ -18,7 +18,7 @@ float laplace_step(float *in, float *out, int n)
 {
   int i, j;
   float error=0.0f;
-  #pragma omp for num_threads(4)
+  #pragma omp for
   for ( j=1; j < n-1; j++ )
     #pragma omp simd reduction(max:error)
     for ( i=1; i < n-1; i++ )
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
          n, n, iter_max );
 
   int iter = 0;
-  #pragma omp parallel
+  #pragma omp parallel num_threads(4)
   while ( error > tol*tol && iter < iter_max )
   {
     iter++;
