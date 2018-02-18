@@ -99,8 +99,8 @@ int main( int argc, char** argv ) {
 			MPI_Recv(&A[(ri-1)*n], n, MPI_FLOAT, rank-1, 2, MPI_COMM_WORLD, &status);
 		}
 		if ( rank < size-1 ) {
-			MPI_Send(&A[rf*n], n, MPI_FLOAT, rank+1, 2, MPI_COMM_WORLD);
 			MPI_Recv(&A[(rf+1)*n], n, MPI_FLOAT, rank+1, 1, MPI_COMM_WORLD, &status);
+			MPI_Send(&A[rf*n], n, MPI_FLOAT, rank+1, 2, MPI_COMM_WORLD);
 		}
 
 		// Computation of the Laplace Step using MPI
