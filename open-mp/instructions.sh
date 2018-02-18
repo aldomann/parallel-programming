@@ -1,5 +1,3 @@
-
-
 # INSTALL TAU
 module load gcc/6.1.0
 module load papi/5.4.3
@@ -39,16 +37,3 @@ tau_cc.sh -lm -o openmp.test_8p_trace lapFusion8.c
 tau_treemerge.pl
 tau2slog2 tau.trc tau.edf -o tau.slog2
 jumpshot
-
-# STEP 4
-export TAU_MAKEFILE=/home/master/ppM/ppM-1-10/my_TAU/x86_64/lib/Makefile.tau-papi-openmp-opari
-export TAU_METRICS=PAPI_L3_TCM
-tau_cc.sh -lm -o openmp.test_4p_papi lapFusion4.c
-./openmp.test_4p_papi 512 500
-
-# FOR ALL EXECUTIONS: ./openmp.testX 512 500
-
-
-
-
-
