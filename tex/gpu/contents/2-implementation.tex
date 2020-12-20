@@ -1,0 +1,67 @@
+%-----------------------------------------------------------------
+%	PERFORMANCE
+%	!TEX root = ./../main.tex
+%-----------------------------------------------------------------
+\section{Implementation of OpenACC}
+
+\subsection{Getting to know OpenACC}
+
+The first thing to do is to identify the GPUs in our computer. We do this doing the following:
+\begin{lstlisting}[language=bash]
+module load pgi64/17.4
+pgaccelinfo | grep "Device Name" && pgaccelinfo | grep "PGI Compiler"
+\end{lstlisting}
+
+If we use the host \inline{aolin21}, we see that the server has two GPUs:
+\begin{lstlisting}[style=output]
+Device Name:                   GeForce GTX 1080 Ti
+Device Name:                   GeForce GTX 680
+PGI Compiler Option:           -ta=tesla:cc60
+PGI Compiler Option:           -ta=tesla:cc30
+\end{lstlisting}
+
+However, on the first Laboratory session we will be running our tests on the local Laboratory machines to be able to use the Visual Profiler and familiarise ourselves with OpenACC. The GPU on the Lab's machines is:
+\begin{lstlisting}[style=output]
+Device Name:                   GeForce GT 430
+PGI Compiler Option:           -ta=tesla:cc20
+\end{lstlisting}
+
+If we need the full information about the GPUs we would just need to run \inline{pgaccelinfo} without grepping the output.
+
+In case we have more than one GPU on the machine, we need to select which one to use exporting the following environment variable:
+\begin{lstlisting}[language=bash]
+# Use first GPU
+export CUDA_VISIBLE_DEVICE=1,0
+# Use second GPU
+export CUDA_VISIBLE_DEVICE=0,1
+\end{lstlisting}
+
+\bigskip
+To compile our code using the PGI compiler, whether it is for CPU or GPU, we need run the following CLI command:
+\begin{lstlisting}[language=bash]
+# Compile for CPU
+pgcc -lm -fast -Minfo=all code-cpu.c -o run-cpu
+# Compile for GPU
+pgcc -lm -fast -acc -ta=tesla:cc20 -Minfo=accel code-gpu.c -o run-gpu
+\end{lstlisting}
+
+Note that PGI Compiler to performs a series of optimisations on the code generated using \inline{#pragma} directives; these optimisations can be listed using the \inline{-Minfo} flag.
+
+For profiling we have several options:
+\begin{itemize}
+	\item \inline{perf stat}, which should not be used for code compiled for GPU.
+	\item \inline{pgprof}, the profiler provided by the PGI Compiler.
+	\item \inline{nvprof} (or \inline{nvvp} for the GUI version), the NVIDIA Profiler.
+\end{itemize}
+
+If we want to profile our code compiled for GPU, we should use either the PGI or NVIDIA profilers.
+
+To use the NVIDIA Profiler (either \inline{nvvp} for the visual profiler, or \inline{nvprof} for the CLI version) we need to load \inline{cuda} to make NVIDIA drivers available:
+\begin{lstlisting}[language=bash]
+module add cuda/7.5
+\end{lstlisting}
+
+\bigskip
+As a general rule, based on the findings of~\cite{a:openacc-best-practices}, we have decided to use \inline{#pragma acc kernels} as much as possible, as they found that explicitly putting all the directives shown by \inline{-Minfo} flag whilst compiling sometimes has a bad impact on the execution time. We will only use manual directives when we want to force the compiler to do something it is unable to do automatically.
+
+Having all this in mind, we can proceed to work with versions of the code same \inline{laplace2d.c} code. The performance results of these will be analysed with more detail in~\cref{sec:results-laplace}.

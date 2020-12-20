@@ -1,0 +1,28 @@
+##### ASSIGNMENT
+
+Task 1: Implement a working version of this algorithm (remember that you can assume that m is divisible by N). The code must be properly documented. You must include all the necessary information for running your code and indicate the test cases you have used.
+
+## Assessing your Solutions
+
+It is likely that for this task you have two versions of your parallel program, the basic and the optimized one. However, if you
+only have the basic one, you can also assess its performance and earn this task’s points.
+
+The assesment of a parallel application performance usually consists in analyzing the scalability (strong and weak) of the application and explaining the causes of the observed results.
+
+This means that you should execute the application using different ‘fixed’ input sizes and variying the number of resources and calculate the speedup and efficiency, and do the same varying both the input size and number of resources.
+
+Then, depending on these results, you can try to quantify the communication overhead, or the communication/computation
+ratio, or the functions that are consuming more time, in order to explain them.
+
+Task 3: Make a performance anlysis of your program versions using the given hints and the support of the perfromance
+analysis tools available in the lab. You must present an organized explanation of this analysis.
+
+
+##### EXERCISE 2 (Lab 2 - Tools MPI)
+
+1. Using the application, you developed in the MPI labs, generate the profiles executing with 2 and 4 cores. Visualize the text summary and the graphic information about your application execution. Which is the most time consuming function of your application?
+
+2. Next, activate TAU tracing and run again your application (for 2 and 4 cores). Visualize the generated trace files using jumpshot. Analyze the results searching for the communication and computation parts.
+
+3. Deliverable: Write a short document (one per group) including the results of points 2 and 3 for your MPI application (laplace) and deliver it (together with the corresponding code) using Virtual Campus (deadline: January, 9th 2018).
+

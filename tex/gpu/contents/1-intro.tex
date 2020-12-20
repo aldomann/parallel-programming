@@ -1,0 +1,20 @@
+%-----------------------------------------------------------------
+%	INTRODUCTION
+%	!TEX root = ./../main.tex
+%-----------------------------------------------------------------
+\section{Introduction}
+
+The backbone of many computer systems is usually centred in its CPU, a general purpose processor. But then, we have the GPU, a more specialized processor contanied in many computers alongside the CPU. These GPU processors were created to handle very complicated calculations mainly related to 2D and 3D graphics, for which the CPU is not so efficient. Thus, CPU and GPU are two quite different processing units, designed for two different purposes, with different trade-offs, and so they have different performance characteristics. Certain tasks are faster in a CPU while other tasks are faster computed in a GPU.
+
+In order to understand their different procedures simplistically, one could think as that the CPU excels at doing complex manipulations to a small set of data, whereas the GPU excels at doing simple manipulations to a large set of data.
+
+Lately, some GPUs have got so specialised that they are now capable of rendering certain calculations even better than central processors~\cite{a:shuai-gpgpu}. Because of this, there is now a movement that is taking advantage of a computer's GPU to supplement a CPU and speed up various tasks~\cite{a:fung-gpgpu}, or even combining both into a single unit.
+
+As technology continues to advance, we might see an increasing degree of convergence of these once-separate parts. Actually, AMD envisages a future where the CPU and GPU are one single unit, capable of seamlessly working together on the same task~\cite{o:hsa-amd}.
+
+In this assignment we aim to improve the execution time of the now-common Laplace 2D code and measure the impact of using GPU-oriented parallelisation, which is usually done by CUDA. For this project, CUDA shall be employed for visualisation purposes regarding performance, but not for the parallelisation itself. For this, we are going to make use of \emph{OpenAcc}; a programming standard for parallel programming of heterogeneous CPU/GPU systems~\cite{o:openacc-std}. The advantage of using OpenACC is that - like OpenMP - we can annotate C code that should be accelerated and/or parallelised. Moreover, it now intends to be used both with NVIDIA's and AMD's GPUs, since its 2.0 version presented important steps towards more general implementations~\cite{o:openacc-amd}.
+
+In order to make the biggest difference on the code and fully appreciate the power of parallel computing, we chose the most computational demanding loop and created many threads using OpenACC, which would split the iterations into different, parallel, more efficient processes.
+
+% Eventually, We will measure the impact of the parallelisation of the code using and more sophisticated analytical tools such as \emph{TAU}. Using \emph{TAU} we will try to identify and analyse the different internal operations of the code and how their performance varies when using a different number of threads.
+

@@ -1,0 +1,18 @@
+%-----------------------------------------------------------------
+%	INTRODUCTION
+%	!TEX root = ./../main.tex
+%-----------------------------------------------------------------
+\section{Introduction}
+
+In this assignment we aim to improve the execution time of the now-common Laplace 2D code and measure the impact of using of OpenMP.
+
+In order to make the biggest difference on the code, we chose the most expensive loop (in terms of computational cost) and created multiple threads using OpenMP, which would split the iterations into different, parallel, more efficient processes.
+
+We will measure the impact of the parallelisation of the code using \inline{perf stat} and more sophisticated analytical tools such as \emph{TAU}. Using \emph{TAU} we will try to identify and analyse the different internal operations of the code and how their performance varies when using a different number of threads.
+
+
+% Moreover, we tested different numbers of threads and many scheduling methods.
+
+% Finally, we recorded the execution times for every alteration in the paralleling in order to be able to compare different paralleling metodologies and decide which method performed the better on our code.
+
+

@@ -1,0 +1,11 @@
+%-----------------------------------------------------------------
+%	CONCLUSIONS
+%	!TEX root = ./../main.tex
+%-----------------------------------------------------------------
+\section{Conclusions}
+
+During the resolution of this exercise, we have had the opportunity to manually create a parallel code, in contrast with the one we had optimised in the OpenMP assignment, that was itself an improvement from the very first code of the course. This time we have used a different methodology to paralellise the code, the widely employed \emph{MPI}. Moreover, we have got the opportunity to further practice with the analytical tool kits known as \emph{TAU} and the basics to understand and interpret different visualisation techniques for performance measurement, profiling, and tracing on parallelised code.
+
+All of this has let us comprehend the importance of parallel programming when aiming for high performance computation, for we have experienced an increase of the performance in every code we have been improving.
+
+At one point we have considered to combine the power of MPI and OpenMP together, as suggested in the assignment; but we have discarded it. The logic for this decision is that there is a limit in the parallelisation we can perform in the code, settled by the number of threads of our computer; and there is no point in adding more parallelisation than our system can handle.

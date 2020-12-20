@@ -1,0 +1,248 @@
+%-----------------------------------------------------------------
+%	PERFORMANCE
+%	!TEX root = ./../main.tex
+%-----------------------------------------------------------------
+\section{Analysis}
+
+\subsection{Setting up the system before working}
+
+Before doing anything, we need to load the \inline{modules} of the compiler and libraries we have to use:
+\begin{lstlisting}
+module load gcc/6.1.0
+module load papi/5.4.3
+module load openmpi/1.8.1
+\end{lstlisting}
+
+After installing TAU and compiling the different \inline{Makefile}s, we need to make sure we include the installation directory on the \inline{$PATH}, this can be done on each session (or by modifying the \inline{.bash_profile}:
+\begin{lstlisting}
+export PATH=/home/master/ppM/ppM-1-10/my_TAU/x86_64/bin:$PATH
+\end{lstlisting}
+
+%-----------------------------------------------------------------
+\subsection{Parallelisation with OpenMP}
+
+One of the main variables to consider when improving the performance of a code using OpenMP is the number of threads that we use. Specifying the exact number of threads to be used can be done easily using this command on our source C code:
+
+\begin{lstlisting}
+#pragma omp parallel for num_threads(NUM_THREADS)
+\end{lstlisting}
+
+This can improve greatly the performance of the code when used on sequential portions of the program, such as loops where each step is independent from the others.
+
+In \cref{sn:omp} we can see how we've implemented the \inline{#pragma} to select the amount of threads we want to use in our program:
+
+\begin{lstlisting}[firstnumber=17, label=sn:omp, caption= Example of parallelisation on nested loops using OpenMP]
+float laplace_step(float *in, float *out, int n)
+{
+  int i, j;
+  float error=0.0f;
+  #pragma omp parallel for num_threads(NUM_THREADS)
+  for ( j=1; j < n-1; j++ )
+    #pragma omp simd reduction(max:error)
+    for ( i=1; i < n-1; i++ )
+    {
+      out[j*n+i]= stencil(in[j*n+i+1], in[j*n+i-1], in[(j-1)*n+i], in[(j+1)*n+i]);
+      error = max_error( error, out[j*n+i], in[j*n+i] );
+    }
+  return error;
+}
+\end{lstlisting}
+
+Where \inline{NUM_THREADS} is an integer that depends on the architecture of the machine that we are using. In our case, we used 2, 4, and 8 threads.
+
+To compile the code we just use vanilla \inline{gcc} with the appropriate flags to enable OpenMP:
+\begin{lstlisting}
+gcc -lm -fopenmp -o test_Np lapFusion.c
+\end{lstlisting}
+where \inline{N} is 2, 4, or 8.
+
+For this first measure of performance, we have used the widely known tool \inline{perf stat} on a code that computes the Laplace 2D equation on a $512 \times 512$ matrix with $500$ iterations:
+
+\begin{lstlisting}
+perf stat ./test_Np 512 500
+\end{lstlisting}
+
+\bigskip
+The results shown in table \ref{tab:perf-stat} reflect an improvement of the performance when using an increasing amount of threads, as expected.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c c}
+    \toprule
+    \toprule
+    \textbf{Num. Threads} & \textbf{Run Time} \\
+    \midrule
+    No parallel           & \SI{4.841}{\s}    \\
+    2 Threads             & \SI{2.521}{\s}    \\
+    4 Threads             & \SI{1.685}{\s}    \\
+    8 Threads             & \SI{0.948}{\s}    \\
+    \bottomrule
+\end{tabular}
+\caption{Run time obtained on multiple threads}
+\label{tab:perf-stat}
+\end{table}
+
+It is crucial to notice that the more threads we use the more efficient the computation becomes, and by a large difference; this fact reflects the great importance of parallelisation and its implications on high-performance computation.
+
+%-----------------------------------------------------------------
+\subsection{Analysis with TAU}
+
+Up to this point we have seen a superficial picture of how the performance increases using OpenMP as a tool to parallelise the code. Now we are going to use \emph{TAU}, a toolkit for analysis performance that allows us to study in detail the performance of many parts of the code that we have parallelised.
+
+As a comparison, we have used the same code as before with the same number of iterations and problem size.
+
+%-----------------------------------------------------------------
+\subsubsection{Using profile files (\texttt{paraprof})}
+
+The toolkit \inline{paraprof} (bundled with TAU) allows us to parallel profile analysis. This is similar to using \inline{perf stat}, but now we have data for each of the threads.
+
+For this part, we need to set the following environment variables:
+\begin{lstlisting}
+export TAU_MAKEFILE=$HOME/my_TAU/x86_64/lib/Makefile.tau-openmp-opari
+export TAU_OPTIONS=-optCompInst
+export TAU_PROFILE=1
+\end{lstlisting}
+
+Then we have to compile our source code using TAU, and then run it as usual
+\begin{lstlisting}
+tau_cc.sh -lm -o openmp.test_Np_trace lapFusionN.c
+./openmp.test_Np_trace 512 500
+\end{lstlisting}
+where \inline{N} can be 2, 4, or 8.
+
+This will give us \inline{profile.0.0.*} profile files; one for each of the threads used. To read and analyse these files we can use the \inline{paraprof} tool.
+
+\bigskip
+Even though we have run the same code, the first thing we notice here is an increase on the \emph{Run Time}. This happens because now we are asking for an on-time measurement of the performance of the code on internal steps; this is more computationally demanding than a simple \inline{perf stat} and thus it takes more time to compute it.
+
+In figure \ref{fig:paraprof-example} we can see the typical 3D Visualisation of the \inline{TIME} metric using \inline{paraprof}. The height of the bars represents the metric, whilst on the $Y$ axis we have the different functions of the compiled code. We will focus on the time metric of the \inline{parallelfor} functions.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\textwidth]{images/paraprof-example}
+	\caption{3D Visualisation of the run time on 8 threads}
+	\label{fig:paraprof-example}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l c c c}
+    \toprule
+    \toprule
+    \textbf{Function} & \textbf{2 Threads} & \textbf{4 Threads} & \textbf{8 Threads} \\
+    \midrule
+    \texttt{parallelfor (barrier enter/exit)} & \SI{0.002}{\s} & \SI{0.007}{\s} & \SI{0.016}{\s} \\
+    \texttt{parallelfor (loop body)}          & \SI{6.684}{\s} & \SI{5.65}{\s} & \SI{2.788}{\s} \\
+    \texttt{parallelfor (parallel begin/end)} & \SI{0.00022}{\s} & \SI{0.00033}{\s} & \SI{0.00042}{\s} \\
+    \texttt{parallelfor (parallel fork/join)} & \SI{0.001}{\s} & \SI{0.033}{\s} & \SI{0.002}{\s} \\
+    \bottomrule
+\end{tabular}
+\caption{Run time obtained on multiple threads}
+\label{my-label}
+\end{table}
+
+This table shows interesting results. On one hand we can see how the \emph{Run Time} of execution of some internal operations increases; such as \inline{barrier enter/exit}, \inline{parallel begin/end}, and \inline{parallel fork/join}. On the other hand we have an outstanding improvement of the performance of the main loop, the \inline{loop body} part; and this is important, for this is the more demanding part of the code and its performance improvement largely compensates the loss of speed on the others.
+
+
+%-----------------------------------------------------------------
+\subsubsection{Using traces (\texttt{jumpshot})}
+
+Now that we have seen some of the standard measurement tools for parallelised code, we can explore even more detailed analytical tools.
+
+For this part, we need to set the following environment variables:
+\begin{lstlisting}
+export TAU_MAKEFILE=$HOME/my_TAU/x86_64/lib/Makefile.tau-openmp-opari
+export TAU_OPTIONS=-optCompInst
+export TAU_TRACE=1
+\end{lstlisting}
+
+Then we have to compile our source code using TAU, and then run it as usual
+\begin{lstlisting}
+tau_cc.sh -lm -o openmp.test_Np_trace lapFusionN.c
+./openmp.test_Np_trace 512 500
+\end{lstlisting}
+where \inline{N} can be 2, 4, or 8.
+
+After doing this, we have to merge the obtained \inline{tautrace.0.0.*.trc} trace files into a readable \inline{.slog2} log file using the following commands:
+\begin{lstlisting}
+tau_treemerge.pl
+tau2slog2 tau.trc tau.edf -o tauNthreads.slog2
+\end{lstlisting}
+
+To visualise the data of the logfile, we simply use the \inline{jumpshot} tool (also bundled with TAU):
+\begin{lstlisting}
+jumpshot tauNthreads.slog2
+\end{lstlisting}
+
+\bigskip
+In tables \ref{tab:jump2}, \ref{tab:jump4}, and \ref{tab:jump8} we can see the results of the \inline{Category count}, \inline{Inclusive ratio}, and \inline{Exclusive ratio} obtained from the \inline{.slog2} log files for 2, 4, and 8 threads respectively.
+
+We have selected to show only \inline{FLUSH} and the parallel operations of the program, to ease the analysis of the data. The \inline{FLUSH} operation deals with the different buffers of the program (temporary memory areas in which data is stored while it is being processed or transferred).
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c l c c c}
+    \toprule
+    \toprule
+    \textbf{Legend} & \textbf{Function} & \textbf{\inline{count}} & \textbf{\inline{incl}} & \textbf{\inline{excl}} \\
+    \midrule
+    \crule[mypurple]{0.8cm}{0.3cm} & \texttt{FLUSH}                            & \num{12}   & \num{0.014} & \num{0.014} \\
+    \crule[mypink]{0.8cm}{0.3cm}   & \texttt{parallelfor (barrier enter/exit)} & \num{1000} & \num{0.002} & \num{0.002} \\
+    \crule[myblue]{0.8cm}{0.3cm}   & \texttt{parallelfor (loop body)}          & \num{1000} & \num{1.999} & \num{1.898} \\
+    \crule[myorange]{0.8cm}{0.3cm} & \texttt{parallelfor (parallel begin/end)} & \num{1000} & \num{1.999} & \num{0}     \\
+    \crule[mygreen]{0.8cm}{0.3cm}  & \texttt{parallelfor (parallel fork/join)} & \num{500}  & \num{1}     & \num{0}     \\
+    \bottomrule
+\end{tabular}
+\caption{Data obtained from the logfile, using TAU with 2  threads}
+\label{tab:jump2}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c l c c c}
+    \toprule
+    \toprule
+    \textbf{Legend} & \textbf{Function} & \textbf{\inline{count}} & \textbf{\inline{incl}} & \textbf{\inline{excl}} \\
+    \midrule
+    \crule[mypurple]{0.8cm}{0.3cm} & \texttt{FLUSH}                            & \num{24}   & \num{0.048} & \num{0.048} \\
+    \crule[mypink]{0.8cm}{0.3cm}   & \texttt{parallelfor (barrier enter/exit)} & \num{2000} & \num{0.345} & \num{0.345} \\
+    \crule[myblue]{0.8cm}{0.3cm}   & \texttt{parallelfor (loop body)}          & \num{2000} & \num{3.573} & \num{2.887} \\
+    \crule[myorange]{0.8cm}{0.3cm} & \texttt{parallelfor (parallel begin/end)} & \num{2000} & \num{3.576} & \num{0.003} \\
+    \crule[mygreen]{0.8cm}{0.3cm}  & \texttt{parallelfor (parallel fork/join)} & \num{500}  & \num{1}     & \num{0.058} \\
+    \bottomrule
+\end{tabular}
+\caption{Data obtained from the logfile, using TAU with 4 threads}
+\label{tab:jump4}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c l c c c}
+    \toprule
+    \toprule
+    \textbf{Legend} & \textbf{Function} & \textbf{\inline{count}} & \textbf{\inline{incl}} & \textbf{\inline{excl}} \\
+    \midrule
+    \crule[mypurple]{0.8cm}{0.3cm} & \texttt{FLUSH}                            & \num{48}   & \num{0.97}  & \num{0.97}  \\
+    \crule[mypink]{0.8cm}{0.3cm}   & \texttt{parallelfor (barrier enter/exit)} & \num{4000} & \num{2.632} & \num{2.632} \\
+    \crule[myblue]{0.8cm}{0.3cm}   & \texttt{parallelfor (loop body)}          & \num{4000} & \num{6.328} & \num{2.012} \\
+    \crule[myorange]{0.8cm}{0.3cm} & \texttt{parallelfor (parallel begin/end)} & \num{4000} & \num{6.339} & \num{0.011} \\
+    \crule[mygreen]{0.8cm}{0.3cm}  & \texttt{parallelfor (parallel fork/join)} & \num{500}  & \num{1}     & \num{0.222} \\
+    \bottomrule
+\end{tabular}
+\caption{Data obtained from the logfile, using TAU with 8 threads}
+\label{tab:jump8}
+\end{table}
+
+In figure \ref{fig:jumpshot-example} we can see an example of the Time Line of internal operations of each one of the used threads. Essentially, it reinforces the conclusions extracted from the previous section where we used \inline{paraprof} but it enables us to visualise the stats in more detail how each of the threads behaves by itself and in relation to the others.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{images/jumpshot-example}
+	\caption{Time Line of the 8 threads visualised using an Identity Map}
+	\label{fig:jumpshot-example}
+\end{figure}
+
+It is interesting to notice how Thread 0 is the one responsible to join the different threads after the parallel part of the program (initialisation of the matrix; see \cref{sn:omp}) is finished.
+
+%-----------------------------------------------------------------
+% \subsubsection{Using \texttt{PAPI}}
